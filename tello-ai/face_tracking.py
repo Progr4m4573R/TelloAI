@@ -28,7 +28,34 @@ def telloGetFrame(tello, w, h):
     img = cv2.resize(tello_cam,(w,h))
     return img
 
-def trackface(tello, info,w,h,pid,pErrorLR,pErrorUD,safe_distance,face_tracking):
+
+def findface(img):
+    facecascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    imgGray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    faces = facecascade.detectMultiScale(image=imgGray, scaleFactor=1.2, minNeighbors=8)#scale and minimum factor
+    
+    facecoords = []
+    facecoordsArea = []
+
+    for (x,y,w,h) in faces:
+        cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+        cx = x + w//2 
+        cy = y + h //2
+        area = w*h
+
+        #cv2.circle(img,(cx,cy),5,(0,255,0),cv2.FILLED)
+
+        facecoordsArea.append(area)
+        facecoords.append([cx,cy])
+
+    if len(facecoords) != 0:
+        i = facecoordsArea.index(max(facecoordsArea))
+        return img, [facecoords[i],facecoordsArea[i]]
+    else:
+        return img,[[0,0],0]
+
+
+def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,safe_distance = [6200,6800],face_tracking=True):
     if face_tracking == True:
 
         #---------------------------------PID control------------------------------------------------
@@ -63,7 +90,7 @@ def trackface(tello, info,w,h,pid,pErrorLR,pErrorUD,safe_distance,face_tracking)
 
         #print("Left, Right PID correction",speedLR)
         #print("Up, Down PID correction", speedUD)
-        print("Forward, Back PID correction", speedFB)
+        #print("Forward, Back PID correction", speedFB)
 
         #check if face detected in frame
         if x != 0:
@@ -85,6 +112,6 @@ def trackface(tello, info,w,h,pid,pErrorLR,pErrorUD,safe_distance,face_tracking)
         tello.up_down_velocity,
         tello.yaw_velocity)
 
-        return [errorLR,errorUD]
+        return [errorLR,errorUD,speedLR,speedFB]
     else:
         pass
