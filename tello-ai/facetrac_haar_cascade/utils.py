@@ -53,7 +53,7 @@ def findface(img):
     else:
         return img,[[0,0],0]
 
-def trackface(tello, info,w,h,pid,pErrorLR,pErrorUD,safe_distance,face_tracking):
+def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,safe_distance = [6200,6800],face_tracking=True):
     if face_tracking == True:
 
         #---------------------------------PID control------------------------------------------------
@@ -73,6 +73,10 @@ def trackface(tello, info,w,h,pid,pErrorLR,pErrorUD,safe_distance,face_tracking)
         speedUD = pid[0] *errorUD + pid[1] * (errorUD-pErrorUD)
         speedUD = int(np.clip(speedUD,-100,100))
         
+        if(speedUD>0):
+            print("Drone moving down...")
+        elif(speedUD<0):
+            print("Drone moving up...")
         #PID for forwards and backwards---------------------------------------------------------
 
         if area > safe_distance[0] and area < safe_distance[1]:
@@ -88,13 +92,13 @@ def trackface(tello, info,w,h,pid,pErrorLR,pErrorUD,safe_distance,face_tracking)
 
         #print("Left, Right PID correction",speedLR)
         #print("Up, Down PID correction", speedUD)
-        print("Forward, Back PID correction", speedFB)
+        #print("Forward, Back PID correction", speedFB)
 
         #check if face detected in frame
         if x != 0:
-            tello.yaw_velocity = speedLR
-            #tello.up_down_velocity = speedUD
-            #tello.left_right_velocity = speedLR
+            #tello.yaw_velocity = speedLR
+            tello.up_down_velocity = speedUD
+            tello.left_right_velocity = speedLR
             tello.for_back_velocity = speedFB
         else:
             tello.for_back_velocity = 0

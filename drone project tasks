@@ -1,0 +1,11 @@
+First task:
+Quantative analysis showing how long it takes to detect the face (do not account for how often faces is lost.) and Value of degree of accuracy. How many frames does ot take to detect a face.
+
+second task:
+get face tracking working for all face recognition algorithms
+Haar_cascade
+dlib SVM
+Yolo
+
+third task:
+mapping
