@@ -7,16 +7,11 @@ from yoloface import face_analysis
 #additions for detection with svm
 from logging import exception
 import face_recognition
-import os 
-import threading
-import socket
-
-
+import os
 
 face=face_analysis()    #  Auto Download a large weight files from Google Drive.
                             #  only first time.
                             #  Automatically  create folder .yoloface on cwd.
-
 def initialisetello():
     tello = Tello()
 
@@ -38,7 +33,6 @@ def telloGetFrame(tello, w, h):
     tello_cam = tello_cam.frame
     img = cv2.resize(tello_cam,(w,h))
     return img
-
 
 def findfacehaar(img):
     facecascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
@@ -234,7 +228,7 @@ def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,saf
         #check if face detected in frame
         if x != 0:
             tello.yaw_velocity = speedLR
-            tello.up_down_velocity = speedUD
+            #tello.up_down_velocity = speedUD
             #tello.left_right_velocity = speedLR
             tello.for_back_velocity = speedFB
         else:
