@@ -191,19 +191,19 @@ def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,saf
         x,y = info[0]
         area = info[1]
         speedFB = 0
-        #PID controller for left and right----------------------------------------------------------
-
+        #PID controller for YAW left and right---------------------------------------------------------
         #subtract object detected distance from screen centre to find the difference for correction
+   
         errorLR  = x - w//2
-        speedLR =  (pid[0] *errorLR) + pid[1] * (errorLR-pErrorLR)
+        speedLR =  ((pid[0] *errorLR) + pid[1] * (errorLR-pErrorLR))
         speedLR = int(np.clip(speedLR,-100,100))#constraints the values for yaw between -100 and 100 where 0 is do nothing
-        
-        #PID for up and down--------------------------------------------------------------------
+
+        #PID for moving drone up and down---------------------------------------------------------------
         errorUD = y - h//2
         speedUD = ((pid[0] *errorUD) + pid[1] * (errorUD-pErrorUD))*-1
         speedUD = int(np.clip(speedUD,-100,100))
         
-        #PID for forwards and backwards---------------------------------------------------------
+        #PID for moving drone forward and backward------------------------------------------------------
 
         if area > safe_distance[0] and area < safe_distance[1]:
             speedFB = 0
@@ -214,7 +214,7 @@ def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,saf
         elif area < safe_distance[0] and area != 0:
             speedFB = 40
 
-        #---------------------------------PID control------------------------------------------------
+        #---------------------------------PID control---------------------------------------------------
 
         #print("Left, Right PID correction",speedLR)
         #print("Up, Down PID correction", speedUD)
@@ -222,6 +222,7 @@ def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,saf
 
         #check if face detected in frame
         if x != 0:
+            #sending velocity commands to both YAW AND LEFT_RIGHT at the same time results in poor control, pick one and comment out the other
             tello.yaw_velocity = speedLR
             tello.up_down_velocity = speedUD
             #tello.left_right_velocity = speedLR
@@ -234,7 +235,7 @@ def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,saf
             errorLR = 0
             errorUD = 0
             speedFB = 0
-        
+            
         tello.send_rc_control(tello.left_right_velocity,
         tello.for_back_velocity,
         tello.up_down_velocity,

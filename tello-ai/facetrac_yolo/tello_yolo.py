@@ -35,7 +35,7 @@ while True:
     ##Step 1 get frame from drone cam
     cap = telloGetFrame(tello,w=360,h=240)
     
-    #step 2 find face in frame with vyolo
+    #step 2 find face in frame with yolo
     frame,info = findfaceyolo(cap)
     
     #step 3 track the face with PID  error in x ais, y axis and front back
