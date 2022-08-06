@@ -195,19 +195,14 @@ def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,saf
 
         #subtract object detected distance from screen centre to find the difference for correction
         errorLR  = x - w//2
-        speedLR =  pid[0] *errorLR + pid[1] * (errorLR-pErrorLR)
+        speedLR =  (pid[0] *errorLR) + pid[1] * (errorLR-pErrorLR)
         speedLR = int(np.clip(speedLR,-100,100))#constraints the values for yaw between -100 and 100 where 0 is do nothing
         
         #PID for up and down--------------------------------------------------------------------
         errorUD = y - h//2
-        speedUD = pid[0] *errorUD + pid[1] * (errorUD-pErrorUD)
+        speedUD = ((pid[0] *errorUD) + pid[1] * (errorUD-pErrorUD))*-1
         speedUD = int(np.clip(speedUD,-100,100))
         
-
-        if speedUD > 0:
-            print("UP")
-        elif speedUD <0:
-            print("DOWN")
         #PID for forwards and backwards---------------------------------------------------------
 
         if area > safe_distance[0] and area < safe_distance[1]:
@@ -228,7 +223,7 @@ def trackface(tello, info,w=360,h=240,pid= [0.5,0.5,0],pErrorLR=0,pErrorUD=0,saf
         #check if face detected in frame
         if x != 0:
             tello.yaw_velocity = speedLR
-            #tello.up_down_velocity = speedUD
+            tello.up_down_velocity = speedUD
             #tello.left_right_velocity = speedLR
             tello.for_back_velocity = speedFB
         else:
